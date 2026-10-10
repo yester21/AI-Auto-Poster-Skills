@@ -1,0 +1,98 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Standard library only — no pip install required.
+      - name: Validate repository structure
+        run: python scripts/validate.py
+
+      - name: Compile lint script
+        run: python -m py_compile skills/aiap-publish/scripts/lint-content.py
+
+      # The fixtures are a contract: clean content must pass (exit 0) and the
+      # reproduced incident must fail (exit 1). If either inverts, the local
+      # pre-check is lying and the skill/doc numbers are no longer trustworthy.
+      - name: "Contract: tests/fixtures/pass.html must PASS"
+        run: |
+          python skills/aiap-publish/scripts/lint-content.py tests/fixtures/pass.html \
+            --title "물가는 왜 체감과 다를까" \
+            --keyword "물가 체감" \
+            --target-chars 1800
+
+      - name: "Contract: tests/fixtures/fail.html must FAIL"
+        run: |
+          set +e
+          python skills/aiap-publish/scripts/lint-content.py tests/fixtures/fail.html \
+            --keyword "물가 체감" \
+            --target-chars 1800
+          code=$?
+          set -e
+          if [ "$code" -eq 0 ]; then
+            echo "::error::fail.html passed the gate — the incident is no longer detected"
+            exit 1
+          fi
+          echo "fail.html correctly rejected (exit $code)"
+
+      # Guard against the S1 detector silently regressing: the reproduced
+      # incident must still report the template-residue and fabrication hits.
+      - name: "Contract: fail.html must detect S1 hits"
+        run: |
+          python skills/aiap-publish/scripts/lint-content.py tests/fixtures/fail.html \
+            --keyword "물가 체감" --target-chars 1800 --json > /tmp/fail.json || true
+          python - <<'PY'
+          import json, sys
+          d = json.load(open("/tmp/fail.json", encoding="utf-8"))
+          s1 = d["counts"]["S1"]
+          dummy = d["metrics"]["dummy_links"]
+          print("S1=%d dummy_links=%d grade=%s" % (s1, dummy, d["grade"]))
+          problems = []
+          if s1 < 8:
+              problems.append("expected >=8 S1 hits, got %d" % s1)
+          if dummy < 1:
+              problems.append("dummy example.com link not detected")
+          if d["checks"]["no_h1"] is not True:
+              problems.append("no_h1 should not be the failing check here")
+          if problems:
+              print("::error::" + "; ".join(problems))
+              sys.exit(1)
+          PY
+
+      - name: Verify SKILL.md frontmatter parses as YAML
+        run: |
+          python - <<'PY'
+          import glob, re, sys
+          bad = []
+          for path in glob.glob("skills/*/SKILL.md"):
+              text = open(path, encoding="utf-8").read()
+              if not text.startswith("---"):
+                  bad.append(path + ": missing frontmatter")
+                  continue
+              end = text.find("\n---", 3)
+              if end == -1:
+                  bad.append(path + ": unterminated frontmatter")
+                  continue
+              for need in ("name:", "description:", "allowed-tools:"):
+                  if need not in text[3:end]:
+                      bad.append("%s: missing %s" % (path, need))
+          if bad:
+              print("::error::" + "; ".join(bad))
+              sys.exit(1)
+          print("frontmatter OK")
+          PY

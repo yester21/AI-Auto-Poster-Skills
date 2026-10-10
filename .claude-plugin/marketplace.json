@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "ai-auto-poster-skills",
+  "owner": {
+    "name": "김대리닷넷",
+    "url": "https://kimdaeri.net"
+  },
+  "metadata": {
+    "description": "Korean SEO writing skills for the AI Auto Poster WordPress plugin",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "ai-auto-poster",
+      "source": "./",
+      "description": "Write, gate and publish Korean SEO posts on WordPress through the AI Auto Poster abilities. Adds the craft layer (SEO structure, heading rules, AI-slop removal, pre-publish verification) that the plugin's server-side gate enforces.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": ["wordpress", "seo", "korean", "writing", "mcp", "publishing", "abilities"]
+    }
+  ]
+}

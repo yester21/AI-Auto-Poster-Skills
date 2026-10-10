@@ -1,0 +1,13 @@
+{
+  "name": "ai-auto-poster",
+  "version": "0.1.0",
+  "description": "Korean SEO writing skills for the AI Auto Poster WordPress plugin: structure, heading rules, AI-slop/translationese removal, and pre-publish verification against the server-side gate.",
+  "author": {
+    "name": "김대리닷넷",
+    "url": "https://kimdaeri.net"
+  },
+  "homepage": "https://github.com/yester21/AI-Auto-Poster",
+  "repository": "https://github.com/yester21/AI-Auto-Poster",
+  "license": "MIT",
+  "keywords": ["wordpress", "seo", "korean", "writing", "mcp", "abilities", "publishing"]
+}

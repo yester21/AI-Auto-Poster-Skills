@@ -1,0 +1,10 @@
+# 저장소에는 LF 로 저장한다 (Windows autocrlf 로 CRLF 가 섞이지 않게)
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.zip binary
