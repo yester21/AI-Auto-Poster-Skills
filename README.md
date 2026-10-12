@@ -5,8 +5,7 @@
 글쓰기 **지식**(스킬)과 실제 **기능**(WordPress 능력)을 분리한 구조다.
 규칙이 바뀌어도 서버만 고치면 되고, 스킬은 그 사용법을 안내한다.
 
-> 이 플러그인은 **0.1.0 초기 개발판**이다. 알려진 문제와 예정 작업은
-> [ROADMAP](https://github.com/yester21/AI-Auto-Poster/blob/main/ROADMAP.md) 참조.
+> 이 스킬 패키지는 **0.1.0 초기 개발판**이다. 변경 내역은 [CHANGELOG](CHANGELOG.md) 참조.
 
 | 계층 | 위치 | 역할 |
 |---|---|---|
@@ -28,7 +27,7 @@
 
 ## 사전 요구사항
 
-1. **[AI 오토포스터 0.1+](https://github.com/yester21/AI-Auto-Poster)** WordPress 플러그인 설치·활성화
+1. **AI 오토포스터 플러그인 필요** (0.1 이상, WordPress 에 설치·활성화)
 2. **MCP Adapter** 플러그인 활성화
 3. **WordPress 6.9+** (Abilities API 내장)
 4. **SERP API 키** — Serper 권장 (실측 KD 용). 없으면 `analyze-keyword` 가 오류를 반환한다
