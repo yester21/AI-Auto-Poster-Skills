@@ -8,7 +8,9 @@
 ### 추가
 
 - **aiap-cluster** — 필러·클러스터 초안 묶음 (키워드 의도 겹침 확인 → 묶음 저장 → 초안 → 링크 연결 → 사람 검수)
+  - 필러는 글·페이지, 클러스터는 글만. 기존 서비스 페이지를 필러로 지정(`pillarPostId`), `aiap/search-content` 로 찾기, "이 주제의 글" 블록·`[aiap_cluster]` 숏코드 안내
 - `lint-content.py` 에 `links_resolved` 게이트 (서버 게이트와 같음)
+- KDR SEO 판정 연결: 발행 전 `kdr-seo/analyze` 로 필수 항목 위반(`requiredFailures`)을 고치게 안내 (aiap-write·aiap-publish·aiap-cluster), `aiap_kdr_required` 오류 처리
 - `validate.py --plugin` 에 스킬 목록 동기화 검사 (플러그인 `AIAP_Skills::SUMMARIES` ↔ `skills/`)
 - README: 워드프레스 **AI 연결 > 스킬** 탭의 설치 프롬프트, 사이트에서 받는 방법(`aiap/get-skill-package`)
 

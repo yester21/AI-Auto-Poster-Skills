@@ -30,19 +30,23 @@ allowed-tools: Read Write Edit Grep Glob AskUserQuestion
 1. aiap/discover-keywords        후보 모으기
 2. aiap/analyze-keyword          후보 실측 (KD·권장 글자수)
    (선택) kdr-seo/keyword-volume 네이버 월간 검색량 — KDR SEO 가 있고 키가 설정된 경우
+   aiap/search-content           필러로 쓸 기존 페이지(서비스 소개 등)·겹치는 기존 글 찾기
 3. 필러 1개 + 클러스터 N개 고르기  ← 여기서 사용자에게 확인받는다
 4. aiap/check-keyword-overlap    같은 검색 의도 키워드 합치기
 5. aiap/create-cluster           묶음 저장 → clusterId
 6. aiap/create-post × (1+N)      초안 (clusterId·clusterRole·focusKeyword)
 7. aiap/link-cluster             링크 자리 연결 → complete 확인
-8. aiap/get-cluster              게이트·링크 상태 보고
+8. aiap/get-cluster              게이트·링크·KDR 점수 보고 (KDR SEO 가 있으면 글마다 kdr.requiredFailures 를 0 으로)
 9. 사용자에게: "관리자 > AI 오토포스터 > 클러스터 에서 검수하고 예약 발행하세요"
 ```
 
 ### 3. 고르기
 
 - **필러**: 주제를 대표하는 넓은 키워드. 사이트 핵심 주제(가장 많은 카테고리) 안에 있어야 한다.
-- **클러스터**: 필러 안의 하위 질문 하나씩. "방법", "비용", "준비물", "초보 루틴"처럼 **답이 다른 질문**이어야 한다.
+  - 필러는 **글 또는 페이지**다. 회사·가게 사이트처럼 서비스 소개 페이지가 이미 있으면
+    **새로 쓰지 말고 그 페이지를 필러로 지정한다** (`aiap/search-content` 로 찾고 사용자에게 확인).
+  - 필러를 새로 쓸 때, 블로그 글이 아니라 사이트의 대표 안내가 맞으면 `postType: "page"` 로 만든다.
+- **클러스터**: **글(post)만.** 필러 안의 하위 질문 하나씩. "방법", "비용", "준비물", "초보 루틴"처럼 **답이 다른 질문**이어야 한다.
   단어만 바꾼 변형(“홈트 루틴” / “홈트레이닝 루틴”)은 같은 글이다.
 - 클러스터는 적게 시작한다 (3~5개). 상한을 넘기면 `create-cluster` 가 거부한다.
 - 고른 목록을 사용자에게 보여 주고 확인받은 뒤 진행한다.
@@ -69,6 +73,23 @@ aiap/create-cluster {
 
 `warnings` (주제 집중도, SERP 미설정)는 **사용자에게 그대로 전한다.**
 
+기존 페이지를 필러로 쓸 때:
+
+```
+aiap/create-cluster {
+  pillarPostId: 12,                    ← 서비스 소개 페이지 ID
+  pillarKeyword: "홈트레이닝 PT",        ← 생략하면 그 페이지의 포커스 키워드
+  clusterKeywords: [...]
+}
+→ { id, pillar_next: "필러 페이지에 '이 주제의 글' 블록이나 [aiap_cluster] 숏코드를 넣으세요" }
+```
+
+- 지정한 페이지는 **사람이 만든 콘텐츠**다. 고치지 않고, 게이트·검수 대상도 아니다. 이 묶음에서는 필러 초안을 만들지 않는다.
+- 필러 → 클러스터 링크는 서버가 넣지 못한다 (빌더 페이지는 본문이 빌더 데이터에 있다).
+  `pillar_next` 안내를 **사용자에게 그대로 전한다**: 페이지에 "이 주제의 글 (필러·클러스터)" 블록,
+  또는 빌더의 숏코드 요소에 `[aiap_cluster id="c_..." title="이 주제의 글"]` 를 넣으면 발행된 클러스터가 자동으로 나열된다.
+- 클러스터 → 필러 링크는 새 글과 똑같이 `<a data-aiap-link="pillar">` 자리로 둔다.
+
 ### 6. 초안
 
 필러부터 쓴다. 모든 글은 `aiap-write` 규칙을 따르고 `aiap/check-content-quality` 로 검사한다.
@@ -84,6 +105,7 @@ aiap/create-post {
 ```
 
 - 묶음 글은 `draft` 로만 만들 수 있다.
+- 필러를 페이지로 새로 쓸 때는 `postType: "page"` (카테고리·태그는 페이지에 붙지 않는다). 클러스터에 page 를 주면 거부된다.
 - 필러의 권장 글자수는 한 단계 위다 (1200→1800, 1800→2600, 2600→3400). 응답의 `cluster.targetChars` 를 따른다.
 - `categoryId` 를 묶음에 줬으면 글에 따로 넘기지 않아도 그 카테고리로 들어간다.
 

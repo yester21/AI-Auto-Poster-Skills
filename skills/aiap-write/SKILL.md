@@ -85,14 +85,39 @@ aiap/check-content-quality { content: "<HTML>", title: "<제목>", keyword: "<�
 응답의 `grade` 가 **A 또는 B** 가 될 때까지 4단계와 5단계를 반복한다.
 `failures` 배열이 비어 있어야 `passed: true` 다.
 
+#### KDR SEO 판정 (KDR SEO 가 켜진 사이트)
+
+오토포스터 게이트는 문체·구조만 본다. 검색 가이드(제목 단어 반복, 키워드 과다, 중복 제목·설명)는
+**KDR SEO** 가 판정하고, 필수 항목 위반(`requiredFailures`)이 있으면 **발행 게이트가 거부한다** (`aiap_kdr_required`).
+
+```
+kdr-seo/analyze { postId }                                   # 저장된 글 (점수도 글에 저장됨)
+kdr-seo/analyze { title, content, keyword, description }     # 고치기 전 미리 확인 (저장 안 함)
+→ { scores: { naver, google }, requiredFailures: ["T3","B1"], checks: [{ ref, status, grade, message }], serp: {...} }
+```
+
+- `title` 은 **글 제목**이다 (SEO 제목은 `seoTitle`). 없는 칸을 넘기면 오류가 난다.
+- `requiredFailures` 의 ref 마다 `checks[].message` 를 읽고 고친다. 자주 나오는 것:
+
+| ref | 뜻 | 고치는 법 |
+|---|---|---|
+| T3 | 제목에 같은 단어가 2번 이상 | 반복 단어 하나를 빼거나 다른 말로 |
+| B1 | 키워드를 억지로 반복 (밀도 과다) | 키워드 일부를 "이 계좌"처럼 지시어·다른 표현으로 |
+| T4 / D6 | 사이트에 제목·설명이 같은 글이 있음 | 제목·설명을 이 글만의 내용으로 |
+| T5 | 제목·설명의 키워드가 본문에 없음 | 본문에 그 내용을 다루거나 제목을 맞춘다 |
+
+- 점수는 **가이드 준수도**이지 순위 예측이 아니다. 사용자에게 "상위노출" 같은 말로 전하지 마라.
+- `aiap/check-content-quality` 도 KDR SEO 가 켜져 있으면 같은 판정을 `kdr` 로 함께 돌려주고, 위반을 `failures` 에 넣는다.
+
 ### 5. 발행
 
 초안을 먼저 만들고 검사하는 흐름을 권장한다.
 
 ```
-aiap/create-post { title, content, status: "draft" }
-aiap/check-content-quality { ... }          # 등급 확인
-aiap/publish-post { postId }                # 게이트 재검사 후 발행
+aiap/create-post { title, content, status: "draft", focusKeyword, metaDescription }
+aiap/check-content-quality { ... }          # 등급 확인 (+ KDR 판정)
+kdr-seo/analyze { postId }                  # KDR SEO 가 있으면: requiredFailures 0 확인
+aiap/publish-post { postId }                # 게이트·KDR 판정 재검사 후 발행
 ```
 
 예약 발행은 `status: "future"` + `date` (사이트 시간 `Y-m-d H:i`).

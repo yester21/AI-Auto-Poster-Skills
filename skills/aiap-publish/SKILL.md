@@ -76,6 +76,16 @@ python scripts/lint-content.py content.html --title "제목" --keyword "키워�
 aiap/update-post { postId: 123, content: "<고친 HTML>" }
 ```
 
+### 4-1. KDR SEO 판정 (KDR SEO 가 켜진 사이트)
+
+```
+kdr-seo/analyze { postId: 123 }
+→ { scores: { naver, google }, requiredFailures: [...], checks: [...] }
+```
+
+`requiredFailures` 가 비어야 발행된다. 고칠 때는 `kdr-seo/analyze { title, content, keyword, description }` 로
+미리 확인한 뒤 `aiap/update-post` 로 저장한다. 키워드·설명은 `aiap/set-seo-meta` 로 바꾼다.
+
 ### 5. 발행
 
 ```
@@ -114,6 +124,7 @@ WordPress 네이티브 예약 발행을 쓰므로 **WP-Cron 이 동작해야** �
 | `naturalness` | 등급 C/D | S1/S2 정리 후 재검사 |
 | `links_resolved` | 클러스터 링크 자리(`data-aiap-link`)가 남음 | `aiap/link-cluster` 로 연결 (`aiap-cluster` 스킬) |
 | `aiap_not_reviewed` | 묶음 글에 사람 검수 표시가 없음 | 발행하지 말고 사용자에게 검수 화면을 안내 |
+| `aiap_kdr_required` | KDR SEO 필수 항목 위반 (T3 제목 단어 반복, B1 키워드 과다, T4/D6 중복, T5 키워드 불일치 등) | 오류 문구의 ref·메시지대로 고치고 `kdr-seo/analyze` 로 다시 확인 |
 
 ```
 # 실패 응답 예
