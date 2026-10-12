@@ -234,6 +234,19 @@ def main():
                 print("  NOTE  lint-content.py has %d pattern(s) not in the server: %s"
                       % (len(missing_in_php), " | ".join(missing_in_php[:8])))
 
+        # 8. skill list sync: the plugin's AI 연결 > 스킬 tab names every skill it expects
+        skills_php = os.path.join(args.plugin, "includes", "class-aiap-skills.php")
+        check("plugin skills file exists", os.path.isfile(skills_php), skills_php)
+        if os.path.isfile(skills_php):
+            m = re.search(r"const SUMMARIES = array\((.*?)\);", read(skills_php), re.S)
+            php_names = set(re.findall(r"'(aiap-[a-z-]+)'\s*=>", m.group(1))) if m else set()
+            repo_names = set(d for d in os.listdir(skills_dir) if d.startswith("aiap-"))
+            check(
+                "plugin skill list matches skills/",
+                php_names == repo_names,
+                "plugin only: %s / repo only: %s" % (sorted(php_names - repo_names), sorted(repo_names - php_names)),
+            )
+
     print("\n=== summary: pass=%d fail=%d ===" % (PASS, FAIL))
     return 1 if FAIL else 0
 

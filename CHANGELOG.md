@@ -3,6 +3,21 @@
 이 저장소의 모든 주요 변경을 기록한다. 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/),
 버전은 [Semantic Versioning](https://semver.org/lang/ko/) 을 따른다.
 
+## [Unreleased]
+
+### 추가
+
+- **aiap-cluster** — 필러·클러스터 초안 묶음 (키워드 의도 겹침 확인 → 묶음 저장 → 초안 → 링크 연결 → 사람 검수)
+- `lint-content.py` 에 `links_resolved` 게이트 (서버 게이트와 같음)
+- `validate.py --plugin` 에 스킬 목록 동기화 검사 (플러그인 `AIAP_Skills::SUMMARIES` ↔ `skills/`)
+- README: 워드프레스 **AI 연결 > 스킬** 탭의 설치 프롬프트, 사이트에서 받는 방법(`aiap/get-skill-package`)
+
+### 변경
+
+- 키워드 밀도 기준(0.4~2.5%)을 지움 — 공식 근거 없는 수치. 제목·설명 길이와 온페이지 점수는 SEO 플러그인이 판정
+- `create-post` 에 `focusKeyword`·`metaDescription` 을 함께 넘기도록 안내 (켜진 SEO 플러그인에 저장)
+- 관리 화면 이름 `AI (MCP)` → `AI 연결` (설정·능력·스킬 탭)
+
 ## [0.1.0] - 2026-10-10
 
 AI 오토포스터 0.1(WordPress Abilities API 기반 MCP 능력 구조)에 맞춘 첫 개발판.

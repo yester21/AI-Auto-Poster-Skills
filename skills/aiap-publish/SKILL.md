@@ -33,13 +33,19 @@ aiap/publish-post            ← 저장된 본문으로 게이트 재검사 후 
 aiap/create-post {
   title: "...",
   content: "<HTML>",
-  status: "draft"
+  status: "draft",
+  focusKeyword: "<포커스 키워드>",
+  metaDescription: "<메타 설명>"
 }
-→ { postId: 123, status: "draft", editLink: "..." }
+→ { postId: 123, status: "draft", editLink: "...", seo: { provider: "kdr", updated: [...], skipped: [] } }
 ```
 
 **항상 draft 로 먼저 만들라.** 초안 상태에서는 게이트가 발행을 막지 않으므로
 반복 개선이 자유롭다.
+
+**`focusKeyword` 를 반드시 넘겨라.** `publish-post` 의 게이트(`h2_keyword`)가 이 키워드를 쓴다.
+키워드와 설명은 켜져 있는 SEO 플러그인(KDR SEO → Rank Math → Yoast 순)에 저장되고,
+`seo.provider` 가 저장한 곳이다. `seo.skipped` 에 내용이 있으면(SEO 플러그인 없음) 사용자에게 알려라.
 
 ### 2. 검사
 
@@ -106,6 +112,8 @@ WordPress 네이티브 예약 발행을 쓰므로 **WP-Cron 이 동작해야** �
 | `h2_keyword` | 키워드 포함 H2 없음 | H2 하나에 키워드 반영 |
 | `length` | 권장의 70% 미만 | 분량 보강 |
 | `naturalness` | 등급 C/D | S1/S2 정리 후 재검사 |
+| `links_resolved` | 클러스터 링크 자리(`data-aiap-link`)가 남음 | `aiap/link-cluster` 로 연결 (`aiap-cluster` 스킬) |
+| `aiap_not_reviewed` | 묶음 글에 사람 검수 표시가 없음 | 발행하지 말고 사용자에게 검수 화면을 안내 |
 
 ```
 # 실패 응답 예
@@ -130,7 +138,7 @@ WordPress 네이티브 예약 발행을 쓰므로 **WP-Cron 이 동작해야** �
 | `aiap_input` | 입력 누락 | 필수 인자 확인 (`date` 등) |
 | `aiap_404` | 글 없음 | postId 확인 |
 | `aiap_time` | 예약 시각 오류 | 넘침/과거/형식 확인 |
-| `aiap_ability_disabled` | 관리자가 능력을 껐음 | **재시도 금지.** 사이트 관리자에게 `AI 오토포스터 > AI (MCP)` 안내 |
+| `aiap_ability_disabled` | 관리자가 능력을 껐음 | **재시도 금지.** 사이트 관리자에게 `AI 오토포스터 > AI 연결 > 능력` 안내 |
 
 ## 권한
 

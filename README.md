@@ -12,7 +12,7 @@
 |---|---|---|
 | 스킬 (이 저장소) | 에이전트 호스트 | 어떻게 쓸지 — SEO 구조, H태그, 슬롭 제거, 검증 절차 |
 | 능력 (`aiap/*`) | WordPress 플러그인 | 실제로 하는 일 — 실측·발행·게이트 |
-| 관리 화면 | `AI 오토포스터 > AI (MCP)` | 어떤 능력을 노출할지 |
+| 관리 화면 | `AI 오토포스터 > AI 연결` | MCP 연결 설정, 노출할 능력, 스킬 설치 프롬프트 |
 
 > **서버가 진실이다.** 스킬의 규칙은 서버(`aiap/get-writing-guide`)와 같은 내용이며,
 > 발행 시점에 서버가 **독립적으로 다시 검사**한다. 스킬을 건너뛰어도 발행되지 않는다.
@@ -24,6 +24,7 @@
 | **aiap-write** | 한국어 SEO 글을 쓸 때. 구조·H태그·슬롭 제거·셀프 검사 |
 | **aiap-publish** | 발행·예약·게이트 실패 해결 |
 | **aiap-research** | 키워드 발굴과 실측 KD |
+| **aiap-cluster** | 필러 1개 + 클러스터 몇 개를 초안으로 만들고 서로 링크. 발행은 사람이 검수한 뒤 |
 
 ## 사전 요구사항
 
@@ -33,7 +34,10 @@
 4. **SERP API 키** — Serper 권장 (실측 KD 용). 없으면 `analyze-keyword` 가 오류를 반환한다
 
 설치 상태는 `aiap/list-ability-status` 로 확인할 수 있다.
-비어 있으면 `AI 오토포스터 > AI (MCP)` 화면에서 어느 요건이 빠졌는지 확인한다.
+비어 있으면 워드프레스 관리자 **AI 오토포스터 > AI 연결** 화면에서 어느 요건이 빠졌는지 확인한다.
+
+가장 쉬운 설치: **AI 연결 > 스킬** 탭의 설치 프롬프트를 복사해 AI 클라이언트에 붙여 넣는다.
+저장소에 닿지 않는 클라이언트는 연결된 사이트의 `aiap/get-skill-package` 능력으로 받는다 (사이트에 설치된 플러그인과 같은 버전).
 
 ## 설치
 
@@ -76,7 +80,7 @@ WordPress:  https://<site>/wp-json/mcp/mcp-adapter-default-server
 OAuth:      https://<site>/.well-known/oauth-authorization-server   (PKCE S256)
 ```
 
-WordPress 의 **AI (MCP)** 화면에서 노출할 능력을 선택한다. 비활성 능력은
+WordPress 의 **AI 오토포스터 > AI 연결** 화면에서 연결 설정을 복사하고, **능력** 탭에서 노출할 능력을 선택한다. 비활성 능력은
 **등록 자체가 건너뛰어지므로** 디스패처로도 호출할 수 없다.
 
 ## 저장소 구조
@@ -98,7 +102,9 @@ WordPress 의 **AI (MCP)** 화면에서 노출할 능력을 선택한다. 비활
 │   ├── aiap-publish/
 │   │   ├── SKILL.md
 │   │   └── scripts/lint-content.py    서버 게이트의 로컬 사본
-│   └── aiap-research/
+│   ├── aiap-research/
+│   │   └── SKILL.md
+│   └── aiap-cluster/
 │       └── SKILL.md
 ├── scripts/validate.py       매니페스트·스킬 구조·패턴 동기화 검증
 ├── AGENTS.md

@@ -164,6 +164,8 @@ def main() -> int:
 
     dummy = len(re.findall(r"href=[\"'][^\"']*(?:example\.(?:com|org|net)|placeholder|yourdomain)", html, re.I))
     chars = len(plain)
+    # 클러스터 링크 자리 (aiap/link-cluster 가 data-aiap-link-id 로 바꾸기 전)
+    unresolved = len(re.findall(r"\bdata-aiap-link\s*=", html, re.I))
 
     target = args.target_chars or 1200
 
@@ -182,6 +184,7 @@ def main() -> int:
         "h2_keyword": True if not kw else h2_with_kw >= 1,
         "length": chars >= int(target * 0.7),
         "naturalness": len(s1) <= 2 and len(s2) <= 5,
+        "links_resolved": unresolved == 0,
     }
     failures = [k for k, v in checks.items() if not v]
     passed = not failures
@@ -194,7 +197,7 @@ def main() -> int:
         "hits": {"S1": s1, "S2": s2},
         "metrics": {
             "chars": chars, "h1": h1, "h2": h2, "h2_with_kw": h2_with_kw,
-            "dummy_links": dummy, "target_chars": target,
+            "dummy_links": dummy, "target_chars": target, "unresolved_links": unresolved,
         },
         "checks": checks,
         "failures": failures,

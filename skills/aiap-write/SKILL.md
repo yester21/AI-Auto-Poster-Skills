@@ -42,17 +42,17 @@ aiap/get-writing-guide ──┘
 | `aiap/analyze-keyword` | 키워드 실측 KD → 권장 글자수 |
 | `aiap/discover-keywords` | 키워드 발굴 (구글 자동완성) |
 | `aiap/check-content-quality` | **발행 전 검사 (반복 호출)** |
-| `aiap/create-post` | 글 등록 (draft 권장) |
+| `aiap/create-post` | 글 등록 (draft 권장). `focusKeyword`·`metaDescription` 을 함께 넘긴다 |
 | `aiap/update-post` | 초안 수정 |
 | `aiap/publish-post` | 공개/예약 발행 (게이트 재검사) |
-| `aiap/set-seo-meta` | 포커스 키워드·메타 설명 |
+| `aiap/set-seo-meta` | 포커스 키워드·메타 설명 (켜진 SEO 플러그인에 저장) |
 
 빠른 경로가 아닌 능력은 `mcp-adapter-execute-ability` 에
 `ability_name: "aiap/..."` 로 호출한다.
 
 > `aiap/list-ability-status` 가 비어 있거나 오류면 서버에 **MCP Adapter** 또는
 > **Abilities API**(WP 6.9+)가 없는 것이다. 사이트 관리자에게
-> `관리자 > AI 오토포스터 > AI (MCP)` 화면을 확인하도록 안내하라. 추측으로 진행하지 마라.
+> `관리자 > AI 오토포스터 > AI 연결` 화면을 확인하도록 안내하라. 추측으로 진행하지 마라.
 
 ## 작업 흐름
 
@@ -111,7 +111,7 @@ aiap/publish-post { postId }                # 게이트 재검사 후 발행
 | 리스트/표 | 1개 이상 — **단, 점수 채우기용 금지** |
 | 내부 링크 | 1개 이상 |
 | 외부 링크 | 최대 3개, **실제 확인한 URL만** |
-| 키워드 밀도 | 0.4~2.5% |
+| 키워드 밀도 | **맞추지 않는다** (공식 근거 없는 수치. 억지 반복 금지) |
 
 ## H 태그 규칙
 
@@ -230,7 +230,7 @@ aiap/publish-post { postId }                # 게이트 재검사 후 발행
 
 | 파일 | 내용 |
 |---|---|
-| `references/seo-structure.md` | 본문 구조·밀도·링크 상세 |
+| `references/seo-structure.md` | 본문 구조·키워드 배치·링크 상세 |
 | `references/heading-rules.md` | H 태그 규칙과 예시 |
 | `references/fabrication-guard.md` | 발명 금지 — 실제 사고 사례 포함 |
 | `references/korean-slop-patterns.md` | 번역투·상투어 전체 목록과 교정 |
